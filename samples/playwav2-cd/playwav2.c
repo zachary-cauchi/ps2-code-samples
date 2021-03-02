@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 	printf("libsd loadmodule %d\n", ret);
 
 	printf("sample: loading audsrv\n");
-	ret = SifLoadModule("cdrom:audsrv.irx", 0, NULL);
+	ret = SifLoadModule("cdrom:\\AUDSRV.IRX", 0, NULL);
 	printf("audsrv loadmodule %d\n", ret);
 
 	ret = audsrv_init();
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 		goto loser;
 	}
 
-	wav = fopen("cdrom:song_22k.wav", "rb");
+	wav = fopen("cdrom:\\SONG_22K.WAV", "rb");
 	if (wav == NULL)
 	{
 		printf("failed to open wav file\n");

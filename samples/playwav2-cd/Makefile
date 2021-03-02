@@ -9,11 +9,8 @@
 EE_BIN = playwav2.elf
 EE_OBJS = playwav2.o
 EE_LIBS = -laudsrv -lc
-ISO = playwav2.iso
-RES_FILES = song_22k.wav
 
 all: $(EE_BIN) audsrv.irx
-	genisoimage -o $(ISO) -V PLAYWAV2 -R -J $(EE_BIN) $(RES_FILES)
 
 audsrv.irx:
 	cp $(PS2SDK)/iop/irx/audsrv.irx $@
