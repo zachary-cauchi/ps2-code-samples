@@ -3,11 +3,14 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**",
-                "/usr/local/ps2dev/ps2sdk/common/include"
+                "${env:PS2SDK}/common/**",
+                "${env:PS2SDK}/ee/**"
             ],
-            "defines": [],
-            "compilerPath": "/usr/bin/clang",
+            "defines": [
+                "_EE",
+                "_IOP"
+            ],
+            "compilerPath": "${env:PS2DEV}/ee/bin/mips64r5900el-ps2-elf-gcc",
             "cStandard": "c11",
             "cppStandard": "c++14",
             "intelliSenseMode": "linux-clang-x64"
