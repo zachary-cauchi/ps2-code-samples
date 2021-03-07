@@ -20,10 +20,16 @@ RUN rm -rf ps2dev
 RUN git clone https://github.com/ps2dev/ps2dev
 RUN ps2dev/build-all.sh
 
+# Clone the gsKit source code for its makefiles.
+ENV GSKITSRC=$PS2DEV/gsKit
+RUN git clone https://github.com/ps2dev/gskit $PS2DEV/gsKitSrc
+RUN rsync -a $PS2DEV/gsKitSrc/ $GSKIT
+RUN rm -rf $PS2DEV/gsKitSrc
+
 # Remove the git repo.
 RUN rm -rf ps2dev
 
-# Install Vector Command-Line (vcl) into ps2sdk
+# Install Vector Command-Line (vcl) into ps2sdk.
 WORKDIR $PS2DEV/share
 ADD https://ps2linux.no-ip.info/playstation2-linux.com/download/vcl/vcl.1.4.beta7.x86.tar ./
 RUN tar -xvf ./vcl.1.4.beta7.x86.tar
@@ -31,11 +37,11 @@ RUN mkdir vcl.1.4.beta7.x86/bin
 RUN mv vcl.1.4.beta7.x86/vcl_14beta7_x86 vcl.1.4.beta7.x86/bin/vcl
 RUN rm ./vcl.1.4.beta7.x86.tar
 
-# Install 32-bit dependency of vcl
+# Install 32-bit dependency of vcl.
 RUN sudo dpkg --add-architecture i386
 RUN sudo apt-get update
 RUN sudo apt-get -y install libstdc++5:i386
 
-# Add VCL to PATH
+# Add VCL to PATH.
 ENV VCL_BIN=$PS2DEV/share/vcl.1.4.beta7.x86/bin
 ENV PATH=$PATH:$VCL_BIN
