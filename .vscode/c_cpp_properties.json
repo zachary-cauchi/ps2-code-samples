@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${env:PS2SDK}/common/**",
-                "${env:PS2SDK}/ee/**"
+                "${env:PS2SDK}/ee/**",
+                "${env:GSKIT}/include/**"
             ],
             "defines": [
                 "_EE",
