@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${env:PS2SDK}/common/**",
+                "${env:PS2SDK}/ee/**"
+            ],
+            "defines": [
+                "_EE",
+                "_IOP"
+            ],
+            "compilerPath": "${env:PS2DEV}/ee/bin/mips64r5900el-ps2-elf-gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-clang-x64"
+        }
+    ],
+    "version": 4
+}
