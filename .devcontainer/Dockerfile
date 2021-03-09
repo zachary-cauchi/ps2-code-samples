@@ -17,19 +17,35 @@ ENV PATH=$PATH:$PS2DEV/bin:$PS2DEV/ee/bin:$PS2DEV/iop/bin:$PS2DEV/dvp/bin:$PS2SD
 RUN rm -rf $PS2DEV
 RUN rm -rf ps2dev
 
+# Build ps2dev
 RUN git clone https://github.com/ps2dev/ps2dev
 RUN ps2dev/build-all.sh
 
-# Clone the gsKit source code for its makefiles.
-ENV GSKITSRC=$PS2DEV/gsKit
-RUN git clone https://github.com/ps2dev/gskit $PS2DEV/gsKitSrc
-RUN rsync -a $PS2DEV/gsKitSrc/ $GSKIT
-RUN rm -rf $PS2DEV/gsKitSrc
+# Prepare the ps2sdk ported libraries collection and compile some gskit dependencies.
+RUN rm -rf $PS2DEV/ports && git clone https://github.com/ps2dev/ps2sdk-ports $PS2DEV/ports
+ENV PORTS=$PS2DEV/ports
+WORKDIR $PORTS
+# Clone and build the libraries.
+RUN make
+RUN cd libjpeg && make
+RUN cd libtiff && make
+RUN rsync -a build/ .
+RUN rm -rf build
 
-# Remove the git repo.
+# Clone the gsKit source code and recompile it with the new libraries (zlib, libpng, libjpeg, and libtiff).
+WORKDIR $PS2DEV
+ENV GSKITSRC=$PS2DEV/gsKitSrc
+RUN rm -rf $GSKIT $GSKITSRC
+RUN git clone https://github.com/ps2dev/gskit $GSKITSRC
+RUN cd $GSKITSRC && ./setup.sh
+RUN rsync -a $GSKITSRC/ $GSKIT
+RUN rm -rf $GSKITSRC
+ENV GSKITSRC=$GSKIT
+
+# Clean up the ps2dev repo.
 RUN rm -rf ps2dev
 
-# Install Vector Command-Line (vcl) into ps2sdk.
+# Install Vector Command-Line (vcl) into the ps2sdk shared libraries directory.
 WORKDIR $PS2DEV/share
 ADD https://ps2linux.no-ip.info/playstation2-linux.com/download/vcl/vcl.1.4.beta7.x86.tar ./
 RUN tar -xvf ./vcl.1.4.beta7.x86.tar
