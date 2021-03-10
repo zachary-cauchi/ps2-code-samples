@@ -1,4 +1,4 @@
-EE_LIBS = -Xlinker --start-group $(EE_LIBS_EXTRA)
+EE_LIBS += -Xlinker --start-group $(EE_LIBS_EXTRA)
 
 ifneq ($(jpeg),)
 LIBJPEG = $(PORTS)/libjpeg
@@ -41,10 +41,7 @@ ifdef ZLIB
 endif
 endif
 
-EE_LIBS += -lgskit_toolkit
-EE_LIBS += -lgskit -ldmakit
-
-EE_LIBS += -Xlinker --end-group
+EE_LIBS += -lgskit_toolkit -lgskit -ldmakit -Xlinker --end-group
 
 # include dir
 EE_INCS += -I$(GSKIT)/ee/gs/include -I$(GSKIT)/ee/dma/include
