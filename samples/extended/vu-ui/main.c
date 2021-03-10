@@ -1,14 +1,4 @@
-//  ____     ___ |    / _____ _____
-// |  __    |    |___/    |     |
-// |___| ___|    |    \ __|__   |     gsKit Open Source Project.
-// ----------------------------------------------------------------------
-// Copyright 2004 - Chris "Neovanglist" Gilbert <Neovanglist@LainOS.org>
-// Licenced under Academic Free License version 2.0
-// Review gsKit README & LICENSE files for further details.
-//
-// basic.c - Example demonstrating basic gsKit operation.
-//
-
+#include <gsToolkit.h>
 #include <gsKit.h>
 #include <dmaKit.h>
 #include <malloc.h>
@@ -22,6 +12,13 @@ int main(int argc, char *argv[])
 	BlueTrans = GS_SETREG_RGBAQ(0x00,0x00,0xFF,0x40,0x00);
 
 	GSGLOBAL *gsGlobal = gsKit_init_global();
+
+#ifdef HAVE_LIBPNG
+	GSTEXTURE zbyszek;
+	u64 TexCol = GS_SETREG_RGBAQ(0x80, 0x80, 0x80, 0x80, 0x00);
+#else
+	printf("Error preparing textures; loader is unimplemented\n");
+#endif
 
 	// Enable transparency.
 	gsGlobal->PrimAlphaEnable = GS_SETTING_ON;
@@ -48,6 +45,16 @@ int main(int argc, char *argv[])
 	gsKit_set_test(gsGlobal, GS_ZTEST_ON);
 
 	gsKit_mode_switch(gsGlobal, GS_ONESHOT);
+
+#ifdef HAVE_LIBPNG
+	zbyszek.Delayed = 1;
+	if (gsKit_texture_png(gsGlobal, &zbyszek, "host:zbyszek.png") < 0)
+	{
+		printf("Failed to load zbyszek! What now?\n");
+	}
+#else
+	printf("Error loading textures; loader is unimplemented\n");
+#endif
 
 	while(1)
 	{

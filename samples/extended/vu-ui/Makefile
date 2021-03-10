@@ -6,10 +6,10 @@
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
 
-EE_BIN = vu1.elf
-EE_OBJS = draw_3D.o main.o
-EE_LIBS = -ldraw -lgraph -lmath3d -lpacket2 -ldma -L$(GSKIT)/lib -lgskit_toolkit -lgskit -ldmakit -lc
-EE_INCS = -I$(GSKIT)/include
+EE_BIN += vu1.elf
+EE_OBJS += draw_3D.o main.o
+EE_LIBS += -ldraw -lgraph -lmath3d -lpacket2 -ldma -lc
+# EE_INCS = -I$(GSKIT)/include -I$(PORTS)/libtiff/include
 EE_DVP = dvp-as
 EE_VCL = vcl
 
@@ -39,5 +39,4 @@ run: $(EE_BIN)
 reset:
 	ps2client reset
 
-include $(PS2SDK)/samples/Makefile.pref
-include $(PS2SDK)/samples/Makefile.eeglobal
+include ../../../makers/gskit.make
