@@ -1,6 +1,6 @@
 EE_LIBS = -Xlinker --start-group $(EE_LIBS_EXTRA)
 
-ifneq ($(libjpeg),)
+ifneq ($(jpeg),)
 LIBJPEG = $(PORTS)/libjpeg
 endif
 
@@ -13,7 +13,7 @@ ifneq ($(zlib),)
 ZLIB = $(PORTS)/zlib
 endif
 
-ifneq ($(libpng),)
+ifneq ($(png),)
 ZLIB = $(PORTS)/zlib
 LIBPNG = $(PORTS)/libpng
 endif
@@ -56,9 +56,6 @@ EE_LIB_DIRS += -L$(PS2SDK)/ee/lib
 EE_LDFLAGS += $(EE_LIB_DIRS)
 
 all: $(EE_BIN)
-
-clean:
-	rm -f $(EE_OBJS) $(EE_BIN)
 
 include $(PS2SDK)/Defs.make
 include $(GSKIT)/ee/Rules.make
