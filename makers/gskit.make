@@ -1,5 +1,23 @@
 EE_LIBS = -Xlinker --start-group $(EE_LIBS_EXTRA)
 
+ifneq ($(libjpeg),)
+LIBJPEG = $(PORTS)/libjpeg
+endif
+
+ifneq ($(tiff),)
+LIBJPEG = $(PORTS)/libjpeg
+LIBTIFF = $(PORTS)/libtiff
+endif
+
+ifneq ($(zlib),)
+ZLIB = $(PORTS)/zlib
+endif
+
+ifneq ($(libpng),)
+ZLIB = $(PORTS)/zlib
+LIBPNG = $(PORTS)/libpng
+endif
+
 ifdef LIBJPEG
 	EE_INCS += -I$(LIBJPEG)/include
 	EE_CFLAGS += -DHAVE_LIBJPEG
