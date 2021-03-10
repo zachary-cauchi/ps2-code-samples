@@ -60,21 +60,25 @@ int main(int argc, char *argv[])
 	{
 		// Move the blue rectangle along.
 		if( y <= 10  && (x + width) < (gsGlobal->Width - 10))
-			x+=10;
+			x+=5;
 		else if( (y + height)  <  (VHeight - 10) && (x + width) >= (gsGlobal->Width - 10) )
-			y+=10;
+			y+=5;
 		else if( (y + height) >=  (VHeight - 10) && x > 10 )
-			x-=10;
+			x-=5;
 		else if( y > 10 && x <= 10 )
-			y-=10;
+			y-=5;
 
-		gsKit_prim_sprite(gsGlobal, x, y, x + width, y + height, 4, BlueTrans);
+#ifdef HAVE_LIBPNG
+		gsKit_TexManager_bind(gsGlobal, &zbyszek);
+		gsKit_prim_sprite_texture(gsGlobal, &zbyszek, x, y, 0.0f, 0.0f, x + width, y + height, zbyszek.Width, zbyszek.Height, 4, White);
+#endif
 
 		// Flip before exec to take advantage of DMA execution double buffering.
 		gsKit_sync_flip(gsGlobal);
 
 		gsKit_queue_exec(gsGlobal);
 
+		gsKit_TexManager_nextFrame(gsGlobal);
 	}
 
 	return 0;
