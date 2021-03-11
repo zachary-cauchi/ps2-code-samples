@@ -35,6 +35,7 @@ RUN rm -rf build
 # Clone the gsKit source code and recompile it with the new libraries (zlib, libpng, libjpeg, and libtiff).
 WORKDIR $PS2DEV
 ENV GSKITSRC=$PS2DEV/gsKitSrc
+ENV GSKIT_DEBUG=1
 RUN rm -rf $GSKIT $GSKITSRC
 RUN git clone https://github.com/ps2dev/gskit $GSKITSRC
 RUN cd $GSKITSRC && ./setup.sh

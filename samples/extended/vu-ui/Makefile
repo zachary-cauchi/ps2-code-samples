@@ -15,6 +15,8 @@ EE_VCL = vcl
 
 DEBUG = true
 
+png = 1
+
 all: zbyszek.c $(EE_BIN)
 	$(EE_STRIP) --strip-all $(EE_BIN)
 
