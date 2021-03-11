@@ -19,3 +19,8 @@ Installation required installing the 32-bit version of libstdc++5.
 When trying out the \'alpha\' example from gsKit, I wasn't able to get the lirary to implement the image-loading routines (namely `gskit_texture_tiff()`).
 Turns out, after installing gsKit through ps2dev, I needed to compile and install the ps2sdk-ports (including zlib, libpng, libtiff, and libjpeg).
 Once compiled, I recompile gsKit using the libraries.
+
+## Tried to rewrite the vu1 sample with gsKit, failing badly
+
+Tried to rewrite the vu1 sample using gsKit instead of the ps2sdk draw library. Reason was to have the readied image-loading routines.
+Instead, will try to reverse-engineer the image-loading routine using the ps2sdk and ported libraries.
