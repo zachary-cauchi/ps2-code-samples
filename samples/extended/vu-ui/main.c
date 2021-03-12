@@ -11,6 +11,7 @@
 
 #include <kernel.h>
 #include <malloc.h>
+#include <stdio.h>
 #include <tamtypes.h>
 #include <gs_psm.h>
 #include <dma.h>
@@ -254,6 +255,67 @@ void set_lod_clut_prim_tex_buff(texbuffer_t *t_texbuff)
 	t_texbuff->info.function = TEXTURE_FUNCTION_DECAL;
 }
 
+void render_ui(framebuffer_t *frame)
+{
+	int i;
+	// The data packet.
+	packet2_t *packet = packet2_create(50, P2_TYPE_NORMAL, P2_MODE_CHAIN, 1);
+	rect_t rectangle;
+
+	rectangle.color.r = 0x00;
+	rectangle.color.g = 0xFF;
+	rectangle.color.b = 0xFF;
+	rectangle.color.a = 0x00;
+	rectangle.color.q = 1.0f;
+
+	// Draw 20 100x100 squares from the origin point.
+	for (i = 0; i < 20; i++)
+	{
+		// dma_wait_fast();
+
+		rectangle.v0.x = ((i * 20) << 4) + (2048<<4);
+		rectangle.v0.y = ((i * 10) << 4) + (2048<<4);
+		rectangle.v0.z = 0;
+
+		rectangle.v1.x = (((i * 20) + 100) << 4) + (2048<<4);
+		rectangle.v1.y = (((i * 10) + 100) << 4) + (2048<<4);
+		rectangle.v1.z = 0;
+
+		packet2_reset(packet, 0);
+
+		packet2_update(packet, draw_rect_filled(packet->next, context, &rectangle));
+		packet2_update(packet, draw_finish(packet->next));
+
+		// // Draw another square on the screen.
+		// PACK_GIFTAG(q, GIF_SET_TAG(4, 1, 0, 0, 0, 1),GIF_REG_AD);
+		// q++;
+		// PACK_GIFTAG(q, GIF_SET_PRIM(6, 0, 0, 0, 0, 0, 0, 0, 0), GIF_REG_PRIM);
+		// q++;
+		// PACK_GIFTAG(q, GIF_SET_RGBAQ((loop0 * 10), 0, 255 - (loop0 * 10), 0x80, 0x3F800000), GIF_REG_RGBAQ);
+		// q++;
+		// PACK_GIFTAG(q, GIF_SET_XYZ(( (loop0 * 20) << 4) + (2048<<4), ((loop0 * 10) << 4) + (2048<<4), 0), GIF_REG_XYZ2);
+		// q++;
+		// PACK_GIFTAG(q, GIF_SET_XYZ( (((loop0 * 20) + 100) << 4) + (2048<<4), (((loop0 * 10) + 100) << 4) + (2048<<4), 0), GIF_REG_XYZ2);
+		// q++;
+
+		// q = draw_finish(q);
+
+		// DMA send
+		dma_wait_fast();
+		dma_channel_send_packet2(packet, DMA_CHANNEL_GIF, 0);
+
+		packet2_print(packet, 50);
+
+		// Wait until the drawing is finished.
+		// draw_wait_finish();
+
+		// Now initiate vsync.
+		// graph_wait_vsync();
+	}
+
+	packet2_free(packet);
+}
+
 void render(framebuffer_t *t_frame, zbuffer_t *t_z, texbuffer_t *t_texbuff)
 {
 	int i, j;
@@ -352,17 +414,17 @@ int main(int argc, char **argv)
 
 	// Init DMA channels.
 	dma_channel_initialize(DMA_CHANNEL_GIF, NULL, 0);
-	dma_channel_initialize(DMA_CHANNEL_VIF1, NULL, 0);
+	// dma_channel_initialize(DMA_CHANNEL_VIF1, NULL, 0);
 	dma_channel_fast_waits(DMA_CHANNEL_GIF);
-	dma_channel_fast_waits(DMA_CHANNEL_VIF1);
+	// dma_channel_fast_waits(DMA_CHANNEL_VIF1);
 
 	// Initialize vif packets
-	zbyszek_packet = packet2_create(10, P2_TYPE_NORMAL, P2_MODE_CHAIN, 1);
-	vif_packets[0] = packet2_create(11, P2_TYPE_NORMAL, P2_MODE_CHAIN, 1);
-	vif_packets[1] = packet2_create(11, P2_TYPE_NORMAL, P2_MODE_CHAIN, 1);
+	// zbyszek_packet = packet2_create(10, P2_TYPE_NORMAL, P2_MODE_CHAIN, 1);
+	// vif_packets[0] = packet2_create(11, P2_TYPE_NORMAL, P2_MODE_CHAIN, 1);
+	// vif_packets[1] = packet2_create(11, P2_TYPE_NORMAL, P2_MODE_CHAIN, 1);
 
-	vu1_upload_micro_program();
-	vu1_set_double_buffer_settings();
+	// vu1_upload_micro_program();
+	// vu1_set_double_buffer_settings();
 
 	// The buffers to be used.
 	framebuffer_t frame;
@@ -376,14 +438,18 @@ int main(int argc, char **argv)
 	init_drawing_environment(&frame, &z);
 
 	// Load the texture into vram.
-	send_texture(&texbuff);
+	// send_texture(&texbuff);
+
+	clear_screen(&frame, &z);
+
+	render_ui(&frame);
 
 	// Render textured cube
-	render(&frame, &z, &texbuff);
+	// render(&frame, &z, &texbuff);
 
-	packet2_free(vif_packets[0]);
-	packet2_free(vif_packets[1]);
-	packet2_free(zbyszek_packet);
+	// packet2_free(vif_packets[0]);
+	// packet2_free(vif_packets[1]);
+	// packet2_free(zbyszek_packet);
 
 	// Sleep
 	SleepThread();

@@ -8,7 +8,7 @@
 
 EE_BIN = vu1.elf
 EE_OBJS = draw_3D.o main.o
-EE_LIBS = -ldraw -lgraph -lmath3d -lpacket2 -ldma
+EE_LIBS += -ldraw -lgraph -lmath3d -lpacket2 -ldma
 EE_DVP = dvp-as
 EE_VCL = vcl
 
