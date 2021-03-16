@@ -1,16 +1,26 @@
-#  ____     ___ |    / _____ _____
-# |  __    |    |___/    |     |
-# |___| ___|    |    \ __|__   |     gsKit Open Source Project.
-# ----------------------------------------------------------------------
-# Copyright 2004 - Chris "Neovanglist" Gilbert <Neovanglist@LainOS.org>
+# _____     ___ ____     ___ ____
+#  ____|   |    ____|   |        | |____|
+# |     ___|   |____ ___|    ____| |    \    PS2DEV Open Source Project.
+#-----------------------------------------------------------------------
+# Copyright 2001-2004, ps2dev - http://www.ps2dev.org
 # Licenced under Academic Free License version 2.0
-# Review gsKit README & LICENSE files for further details.
-#
-# examples/font/Makefile - Makefile for "font" example.
-#
+# Review ps2sdk README & LICENSE files for further details.
 
-EE_BIN  = font.elf
-EE_OBJS = font.o
+EE_BIN = font.elf
+EE_OBJS = font.o impress.o
+EE_LIBS = -lfont -lpacket2 -lpacket -ldma -lgraph -ldraw -lc
 
-include $(GSKITSRC)/Makefile.pref
-include $(GSKITSRC)/examples/Makefile.global
+all: $(EE_BIN)
+	$(EE_STRIP) --strip-all $(EE_BIN)
+
+clean:
+	rm -f $(EE_BIN) $(EE_OBJS)
+
+run: $(EE_BIN)
+	ps2client execee host:$(EE_BIN)
+
+reset:
+	ps2client reset
+
+include $(PS2SDK)/samples/Makefile.pref
+include $(PS2SDK)/samples/Makefile.eeglobal

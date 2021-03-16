@@ -1,85 +1,218 @@
-//  ____     ___ |    / _____ _____
-// |  __    |    |___/    |     |
-// |___| ___|    |    \ __|__   |     gsKit Open Source Project.
-// ----------------------------------------------------------------------
-// Copyright 2004 - Chris "Neovanglist" Gilbert <Neovanglist@LainOS.org>
-// Licenced under Academic Free License version 2.0
-// Review gsKit README & LICENSE files for further details.
-//
-// font.c - Example demonstrating basic font operation.
-//
+#include <dma.h>
 
-#include <gsKit.h>
-#include <dmaKit.h>
-#include <malloc.h>
+#include <stdio.h>
+#include <string.h>
+#include <tamtypes.h>
 
-#include <gsToolkit.h>
+#include <packet.h>
+#include <graph.h>
+#include <gs_psm.h>
+#include <draw.h>
+#include <kernel.h>
 
-int main(int argc, char *argv[])
+#include <font.h>
+
+extern unsigned int  image_clut32[];
+extern unsigned char  image_pixel[];
+
+int myaddress = 0;
+int clutaddress = 0;
+
+fsfont_t impress;
+fontx_t krom_u;
+fontx_t krom_k;
+packet_t packet;
+
+void draw_init_env()
 {
-	u64 White, Black, BlackFont, WhiteFont, RedFont, GreenFont, BlueFont, BlueTrans, RedTrans, GreenTrans, WhiteTrans;
-	GSGLOBAL *gsGlobal = gsKit_init_global();
 
-	GSFONT *gsFont = gsKit_init_font(GSKIT_FTYPE_BMP_DAT, "host:dejavu.bmp");
-	// GSFONT *gsFont = gsKit_init_font(GSKIT_FTYPE_PNG_DAT, "host:dejavu.png");
+	framebuffer_t frame;
+	zbuffer_t z;
 
-	dmaKit_init(D_CTRL_RELE_OFF,D_CTRL_MFD_OFF, D_CTRL_STS_UNSPEC,
-		    D_CTRL_STD_OFF, D_CTRL_RCYC_8, 1 << DMA_CHANNEL_GIF);
+	packet_t *packet = packet_init(16,PACKET_NORMAL);
 
-	// Initialize the DMAC
-	dmaKit_chan_init(DMA_CHANNEL_GIF);
+	qword_t *q = packet->data;
 
-	Black = GS_SETREG_RGBAQ(0x00,0x00,0x00,0x00,0x00);
-	White = GS_SETREG_RGBAQ(0xFF,0xFF,0xFF,0x00,0x00);
+	frame.width = 640;
+	frame.height = 448;
+	frame.psm = GS_PSM_32;
+	frame.mask = 0;
+	frame.address = graph_vram_allocate(frame.width,frame.height,frame.psm,GRAPH_ALIGN_PAGE);
 
-	WhiteFont = GS_SETREG_RGBAQ(0xFF,0xFF,0xFF,0x80,0x00);
-	BlackFont = GS_SETREG_RGBAQ(0x00,0x00,0x00,0x80,0x00);
-	RedFont = GS_SETREG_RGBAQ(0xFF,0x00,0x00,0x80,0x00);
-	GreenFont = GS_SETREG_RGBAQ(0x00,0xFF,0x00,0x80,0x00);
-	BlueFont = GS_SETREG_RGBAQ(0x00,0x00,0xFF,0x80,0x00);
+	z.enable = 0;
+	z.method = ZTEST_METHOD_GREATER;
+	z.address = 0;
+	z.mask = 1;
+	z.zsm = 0;
 
-	BlueTrans = GS_SETREG_RGBAQ(0x00,0x00,0xFF,0x40,0x00);
-	RedTrans = GS_SETREG_RGBAQ(0xFF,0x00,0x00,0x60,0x00);
-	GreenTrans = GS_SETREG_RGBAQ(0x00,0xFF,0x00,0x50,0x00);
-	WhiteTrans = GS_SETREG_RGBAQ(0xFF,0xFF,0xFF,0x50,0x00);
+	graph_initialize(frame.address,640,448,GS_PSM_32,0,0);
 
-	gsGlobal->PrimAlpha = GS_BLEND_FRONT2BACK;
-	gsGlobal->PSM = GS_PSM_CT16;
-	gsGlobal->PSMZ = GS_PSMZ_16;
+	q = draw_setup_environment(q,0,&frame,&z);
 
-	gsKit_init_screen(gsGlobal);
+	q = draw_finish(q);
 
-	gsKit_mode_switch(gsGlobal, GS_PERSISTENT);
+	dma_channel_send_normal(DMA_CHANNEL_GIF,packet->data, q - packet->data, 0,0);
+	dma_wait_fast();
 
-	gsKit_font_upload(gsGlobal, gsFont);
+	packet_free(packet);
 
-	gsKit_clear(gsGlobal, Black);
+}
 
-	gsKit_font_print(gsGlobal, gsFont, 50, 50, 1, WhiteFont, "Hello World!");
+void init_texture()
+{
+	packet_t *packet = packet_init(50,PACKET_NORMAL);
 
-	gsKit_font_print(gsGlobal, gsFont, 50, 80, 1, RedFont, "red");
-	gsKit_font_print(gsGlobal, gsFont, 50, 110, 1, GreenFont, "green");
-	gsKit_font_print(gsGlobal, gsFont, 50, 140, 1, BlueFont, "blue");
+	qword_t *q = packet->data;
 
-	gsKit_font_print_scaled(gsGlobal, gsFont, 400, 160, 2, 2.0f, BlueFont, "scaled 1\n"\
-                                                                           "scaled 2\n"\
-                                                                           "scaled 3\n");
+	myaddress = graph_vram_allocate(512,256,GS_PSM_4, GRAPH_ALIGN_BLOCK);
+	clutaddress = graph_vram_allocate(8,2,GS_PSM_32, GRAPH_ALIGN_BLOCK);
 
-	gsKit_font_print(gsGlobal, gsFont, 100, 200, 2, WhiteFont, "Testing 1\n"\
-							       "Testing 2\n"\
-							       "Testing 3\n"\
-							       "Testing 4\n"\
-							       "Testing 5\n"\
-							       "Testing 6\n"\
-							       "Testing 7\n"\
-							       "Testing 8\n"\
-							       "Testing 9\n"\
-							       "Testing 10\n");
+	q = packet->data;
+
+	q = draw_texture_transfer(q,image_pixel,512,256,GS_PSM_4,myaddress,512);
+	q = draw_texture_transfer(q,image_clut32,8,2,GS_PSM_32,clutaddress,64);
+	q = draw_texture_flush(q);
+
+	dma_channel_send_chain(DMA_CHANNEL_GIF,packet->data, q - packet->data, 0,0);
+	dma_wait_fast();
+
+	packet_free(packet);
+
+}
+
+void run_demo(packet_t *packet)
+{
+
+	int context = 0;
+
+	vertex_t v0;
+
+	color_t c0;
+	color_t c1;
+
+	texbuffer_t texbuf;
+	clutbuffer_t clut;
+	lod_t lod;
+
+	packet_t *packets[2];
+	packet_t *current;
+
+	packets[0] = packet_init(10000,PACKET_NORMAL);
+	packets[1] = packet_init(10000,PACKET_NORMAL);
+
+	// Use linear filtering for good scaling results
+	lod.calculation = LOD_USE_K;
+	lod.max_level = 0;
+	lod.mag_filter = LOD_MAG_LINEAR;
+	lod.min_filter = LOD_MIN_LINEAR;
+	lod.l = 0;
+	lod.k = 0;
+
+	texbuf.width = 512;
+	texbuf.psm = GS_PSM_4;
+	texbuf.address = myaddress;
+
+	texbuf.info.width = draw_log2(512);
+	texbuf.info.height = draw_log2(256);
+	texbuf.info.components = TEXTURE_COMPONENTS_RGBA;
+	texbuf.info.function = TEXTURE_FUNCTION_MODULATE;
+
+	clut.storage_mode = CLUT_STORAGE_MODE1;
+	clut.start = 0;
+
+	clut.psm = GS_PSM_32;
+	clut.load_method = CLUT_LOAD;
+	clut.address = clutaddress;
+
+	v0.x = 320.0f;
+	v0.y = 240.0f;
+	v0.z = 4;
+
+	c0.r = 0xFF;
+	c0.g = 0xFF;
+	c0.b = 0xFF;
+	c0.a = 0x80;
+	c0.q = 1.0f;
+
+	c1.r = 0xFF;
+	c1.g = 0x00;
+	c1.b = 0x00;
+	c1.a = 0x40;
+	c1.q = 1.0f;
+
+	// UTF-8
+	unsigned char str0[] = { 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x57, 0x6f, 0x72, 0x6c, 0x64, '\0'};
+
+	// Shift-JIS
+	unsigned char str1[] = {0x81, 0xBC, 0x93, 0xF1, 0x93, 0xF1, 0x93, 0xF1, 0x81, 0x69, 0x81, 0x40, 0x81,
+							0x4F, 0x83, 0xD6, 0x81, 0x4F, 0x81, 0x6A, 0x93, 0xF1, 0x81, 0xBD, 0x0D, '\0' };
+
+	qword_t *q = packet->data;
+
 	while(1)
 	{
-		gsKit_queue_exec(gsGlobal);
-		gsKit_sync_flip(gsGlobal);
+
+		current = packets[context];
+		q = current->data;
+
+		q = draw_clear(q,0,0,0,640.0f,448.0f,0x40,0x40,0x40);
+
+		q = draw_texture_sampling(q,0,&lod);
+		q = draw_texturebuffer(q,0,&texbuf,&clut);
+
+		impress.scale = 3.0f;
+
+		q = fontx_print_ascii(q,0,str0,CENTER_ALIGN,&v0,&c0,&krom_u);
+		// q = fontx_print_sjis(q,0,str1,CENTER_ALIGN,&v0,&c0,&krom_u,&krom_k);
+		// q = fontstudio_print_string(q,0,str0,CENTER_ALIGN,&v0,&c1,&impress);
+
+		q = draw_finish(q);
+
+		dma_wait_fast();
+		dma_channel_send_normal(DMA_CHANNEL_GIF,current->data, q - current->data, 0,0);
+
+		draw_wait_finish();
+
+		context ^= 1;
+
+		graph_wait_vsync();
+
 	}
+
+	free(packets[0]);
+	free(packets[1]);
+}
+
+int main(void)
+{
+	// char *ini;
+
+	dma_channel_initialize(DMA_CHANNEL_GIF,NULL,0);
+	dma_channel_fast_waits(DMA_CHANNEL_GIF);
+
+	fontx_load("rom0:KROM", &krom_u, SINGLE_BYTE, 2, 1, 1);
+	// fontx_load("rom0:KROM", &krom_k, DOUBLE_BYTE, 2, 1, 1);
+
+	// if((ini = fontstudio_load_ini("host:impress.ini")) != NULL)
+	// {
+		// fontstudio_parse_ini(&impress, ini, 512, 256);
+		// free(ini);
+
+		draw_init_env();
+
+		init_texture();
+
+		run_demo(&packet);
+
+		// fontstudio_unload_ini(&impress);
+
+		fontx_unload(&krom_u);
+		// fontx_unload(&krom_k);
+	// } else {
+	// 	printf("Error: cannot load ini file.\n");
+	// }
+
+	SleepThread();
 
 	return 0;
 }
