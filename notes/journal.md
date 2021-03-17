@@ -24,3 +24,7 @@ Once compiled, I recompile gsKit using the libraries.
 
 Tried to rewrite the vu1 sample using gsKit instead of the ps2sdk draw library. Reason was to have the readied image-loading routines.
 Instead, will try to reverse-engineer the image-loading routine using the ps2sdk and ported libraries.
+
+## Getting fonts working.
+
+Managed to get a sample demo working taken from the ps2sdk repo, using the bios built-in font `KROM`. Currently, only managed to get ascii encoding working and using only FontX, with FontStudio being disabled. Next step would be to find a way of using custom fonts, either in FontX or FontStudio format.
