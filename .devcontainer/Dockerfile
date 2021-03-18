@@ -62,3 +62,5 @@ RUN sudo apt-get -y install libstdc++5:i386
 # Add VCL to PATH.
 ENV VCL_BIN=$PS2DEV/share/vcl.1.4.beta7.x86/bin
 ENV PATH=$PATH:$VCL_BIN
+
+ENV MAKERS=/workspaces/ps2-code-samples/makers

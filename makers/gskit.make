@@ -54,6 +54,5 @@ EE_LDFLAGS += $(EE_LIB_DIRS)
 
 all: $(EE_BIN)
 
-include $(PS2SDK)/Defs.make
-include $(GSKIT)/ee/Rules.make
-include $(GSKIT)/Makefile.pref
+include $(MAKERS)/sharedDefs.make
+include $(MAKERS)/compileRules.make
