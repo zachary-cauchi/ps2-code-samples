@@ -12,16 +12,22 @@
 EE_INCS := -I$(PS2SDK)/ee/include -I$(PS2SDK)/common/include -I. $(EE_INCS)
 
 # C compiler flags
-EE_CFLAGS := -D_EE -O2 -G0 -Wall $(EE_CFLAGS)
+EE_CFLAGS += -D_EE -G0 -Wall
 
 # C++ compiler flags
-EE_CXXFLAGS := -D_EE -O2 -G0 -Wall $(EE_CXXFLAGS)
+EE_CXXFLAGS := -D_EE -G0 -Wall
 
 # Linker flags
 EE_LDFLAGS := -L$(PS2SDK)/ee/lib $(EE_LDFLAGS)
 
 # Assembler flags
 EE_ASFLAGS := -G0 $(EE_ASFLAGS)
+
+ifeq ($(EE_DEBUG),true)
+    EE_CFLAGS += -g
+else
+    EE_CFLAGS += -O2
+endif
 
 # Externally defined variables: EE_BIN, EE_OBJS, EE_LIB
 
