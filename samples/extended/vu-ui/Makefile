@@ -13,7 +13,7 @@ EE_LIBS += -ldraw -lgraph -lmath3d -lpacket2 -ldma -lc
 EE_DVP = dvp-as
 EE_VCL = vcl
 
-DEBUG = true
+EE_DEBUG = true
 
 png = 1
 
