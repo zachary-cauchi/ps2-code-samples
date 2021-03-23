@@ -28,3 +28,7 @@ Instead, will try to reverse-engineer the image-loading routine using the ps2sdk
 ## Getting fonts working.
 
 Managed to get a sample demo working taken from the ps2sdk repo, using the bios built-in font `KROM`. Currently, only managed to get ascii encoding working and using only FontX, with FontStudio being disabled. Next step would be to find a way of using custom fonts, either in FontX or FontStudio format.
+
+## Got multi-path rendering working
+
+After a lot of troubleshooting and strange bugs, I finally managed to merge the vu1 and graph samples together into one, rendering multiple coloured rectangles atop an array of cubes with the rectangles acting as UI elements. The next step from here will be to convert the sample to C++ and following quickly after with controller input.
