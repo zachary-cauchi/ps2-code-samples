@@ -27,7 +27,7 @@ ENV PORTS=$PS2DEV/ports
 WORKDIR $PORTS
 # Clone and build the libraries.
 RUN make
-RUN cd libjpeg && make
+RUN cd libjpeg_ps2_addons && make
 RUN cd libtiff && make
 RUN rsync -a build/ .
 RUN rm -rf build
