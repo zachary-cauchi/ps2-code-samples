@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "kernel.h": "c",
+        "gskit.h": "c",
+        "draw.h": "c",
+        "tamtypes.h": "c",
+        "gs_psm.h": "c",
+        "dma.h": "c",
+        "packet2.h": "c",
+        "packet2_utils.h": "c",
+        "graph.h": "c",
+        "dmakit.h": "c",
+        "malloc.h": "c",
+        "draw3d.h": "c",
+        "dma_tags.h": "c"
+    }
+}

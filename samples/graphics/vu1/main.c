@@ -28,25 +28,25 @@
 /** Data of our texture (24bit, RGB8) */
 extern unsigned char zbyszek[];
 
-/** 
- * Data of VU1 micro program (draw_3D.vcl/vsm). 
- * How we can use it: 
- * 1. Upload program to VU1. 
- * 2. Send calculated local_screen matrix once per mesh (3D object) 
- * 3. Set buffers size. (double-buffering described below) 
- * 4. Send packet with: lod, clut, tex buffer, scale vector, rgba, verts and sts. 
- * What this program is doing? 
- * 1. Load local_screen. 
- * 2. Zero clipping flag. 
- * 3. Set current buffer start address from TOP register (xtop command) 
- *      To use pararelism, we set two buffers in the VU1. It means, that when 
- *      VU1 is working with one verts packet, we can load second one into another buffer. 
- *      xtop command is automatically switching buffers. I think that AAA games used 
- *      quad buffers (TOP+TOPS) which can give best performance and no VIF_FLUSH should be needed. 
- * 4. Load rest of data. 
- * 5. Prepare GIF tag. 
- * 6. For every vertex: transform, clip, scale, perspective divide. 
- * 7. Send it to GS via XGKICK command. 
+/**
+ * Data of VU1 micro program (draw_3D.vcl/vsm).
+ * How we can use it:
+ * 1. Upload program to VU1.
+ * 2. Send calculated local_screen matrix once per mesh (3D object)
+ * 3. Set buffers size. (double-buffering described below)
+ * 4. Send packet with: lod, clut, tex buffer, scale vector, rgba, verts and sts.
+ * What this program is doing?
+ * 1. Load local_screen.
+ * 2. Zero clipping flag.
+ * 3. Set current buffer start address from TOP register (xtop command)
+ *      To use pararelism, we set two buffers in the VU1. It means, that when
+ *      VU1 is working with one verts packet, we can load second one into another buffer.
+ *      xtop command is automatically switching buffers. I think that AAA games used
+ *      quad buffers (TOP+TOPS) which can give best performance and no VIF_FLUSH should be needed.
+ * 4. Load rest of data.
+ * 5. Prepare GIF tag.
+ * 6. For every vertex: transform, clip, scale, perspective divide.
+ * 7. Send it to GS via XGKICK command.
  */
 extern u32 VU1Draw3D_CodeStart __attribute__((section(".vudata")));
 extern u32 VU1Draw3D_CodeEnd __attribute__((section(".vudata")));
@@ -56,11 +56,11 @@ VECTOR camera_position = {140.00f, 140.00f, 40.00f, 1.00f};
 VECTOR camera_rotation = {0.00f, 0.00f, 0.00f, 1.00f};
 MATRIX local_world, world_view, view_screen, local_screen;
 
-/** 
- * Packets for sending VU data 
- * Each packet will have: 
- * a) View/Projection matrix (calculated every frame) 
- * b) Cube data (prim,lod,vertices,sts,...) added from zbyszek_packet. 
+/**
+ * Packets for sending VU data
+ * Each packet will have:
+ * a) View/Projection matrix (calculated every frame)
+ * b) Cube data (prim,lod,vertices,sts,...) added from zbyszek_packet.
  */
 packet2_t *vif_packets[2] __attribute__((aligned(64)));
 packet2_t *curr_vif_packet;
@@ -73,21 +73,21 @@ u8 context = 0;
 /** Set GS primitive type of drawing. */
 prim_t prim;
 
-/** 
- * Color look up table. 
- * Needed for texture. 
+/**
+ * Color look up table.
+ * Needed for texture.
  */
 clutbuffer_t clut;
 
-/** 
- * Level of details. 
- * Needed for texture. 
+/**
+ * Level of details.
+ * Needed for texture.
  */
 lod_t lod;
 
-/** 
- * Helper arrays. 
- * Needed for calculations. 
+/**
+ * Helper arrays.
+ * Needed for calculations.
  */
 VECTOR *c_verts __attribute__((aligned(128))), *c_sts __attribute__((aligned(128)));
 
@@ -260,8 +260,8 @@ void render(framebuffer_t *t_frame, zbuffer_t *t_z, texbuffer_t *t_texbuff)
 
 	set_lod_clut_prim_tex_buff(t_texbuff);
 
-	/** 
-	 * Allocate some space for object position calculating. 
+	/**
+	 * Allocate some space for object position calculating.
 	 * c_ prefix = calc_
 	 */
 	c_verts = (VECTOR *)memalign(128, sizeof(VECTOR) * faces_count);

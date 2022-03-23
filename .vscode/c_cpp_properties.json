@@ -5,7 +5,8 @@
             "includePath": [
                 "${env:PS2SDK}/common/**",
                 "${env:PS2SDK}/ee/**",
-                "${env:GSKIT}/include/**"
+                "${env:GSKIT}/include/**",
+                "${workspaceRoot}/samples"
             ],
             "defines": [
                 "_EE",

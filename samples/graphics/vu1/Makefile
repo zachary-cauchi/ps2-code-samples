@@ -15,8 +15,8 @@ EE_VCL = vcl
 all: zbyszek.c $(EE_BIN)
 	$(EE_STRIP) --strip-all $(EE_BIN)
 
-# Original VCL tool preferred. 
-# It can be runned on WSL, but with some tricky commands: 
+# Original VCL tool preferred.
+# It can be runned on WSL, but with some tricky commands:
 # https://github.com/microsoft/wsl/issues/2468#issuecomment-374904520
 %.vsm: %.vcl
 	$(EE_VCL) $< >> $@
@@ -37,4 +37,4 @@ reset:
 	ps2client reset
 
 include $(PS2SDK)/samples/Makefile.pref
-include $(PS2SDK)/samples/Makefile.eeglobal
+include $(PS2SDK)/samples/Makefile.eeglobal_cpp

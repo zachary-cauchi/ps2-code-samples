@@ -225,7 +225,7 @@ void clear_screen(framebuffer_t *frame, zbuffer_t *z)
 void render_ui()
 {
 
-	packet2_t *p = packet2_create(40, P2_TYPE_NORMAL, P2_TYPE_NORMAL, 0);
+	packet2_t *p = packet2_create(40, P2_TYPE_NORMAL, P2_MODE_NORMAL, 0);
 
 	rect_t rect;
 
